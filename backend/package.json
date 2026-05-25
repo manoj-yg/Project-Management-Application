@@ -1,0 +1,21 @@
+{
+  "name": "backend",
+  "version": "1.0.0",
+  "description": "Project management application",
+  "keywords": [
+    "Project",
+    "management",
+    "backend",
+    "API"
+  ],
+  "license": "ISC",
+  "author": "Manoj Y G",
+  "type": "module",
+  "main": "index.js",
+  "scripts": {
+    "dev": "node index.js"
+  },
+  "devDependencies": {
+    "prettier": "3.8.3"
+  }
+}
