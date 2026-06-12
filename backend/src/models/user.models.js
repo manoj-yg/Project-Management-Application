@@ -1,5 +1,8 @@
 import mongoose, { Schema } from "mongoose";
 import bcrypt from "bcrypt";
+import jwt from "jsonwebtoken";
+import crypto from "crypto";
+
 const userSchema = new Schema({
   avatar: {
     type: {
@@ -69,6 +72,57 @@ userSchema.pre("save",async function(next){
 userSchema.methods.isPasswordCorrect=async function(password){
   return await bcrypt.compare(password,this.password);
 };
-
 // JWT has three parts header,payload,signature(xxx.yyyy.zzzz)
+/** 
+Client Login
+     ↓
+Server creates JWT
+     ↓
+Client stores JWT
+     ↓
+Client sends JWT with every request
+     ↓
+Server verifies Signature
+     ↓
+Access granted
+*/
+
+userSchema.methods.generateAccessToken = function(){
+  return jwt.sign(
+    //payload
+    {
+      _id:this._id,
+      email:this.email,
+      username:this.username
+    },
+    process.env.ACCESS_TOKEN_SECRET,
+    {expiresIn:process.env.ACCESS_TOKEN_EXPIRY}
+  )
+}
+
+
+userSchema.methods.generateRefreshToken=function(){
+  return jwt.sign(
+    {
+      _id: this._id,
+      email: this.email,
+      username: this.username,
+    },
+    process.env.REFRESH_TOKEN_SECRET,
+    { expiresIn: process.env.REFRESH_TOKEN_EXPIRY },
+  );
+}
+
+
+userSchema.methods.generateTemporaryToken = function(){
+  const unHashedToken=crypto.randomBytes(22).toString("hex")
+
+  const hashedToken=crypto
+        .createHash("sha256")
+        .update(unHashedToken)
+        .digest("hex")
+
+  const tokenExpiry=Date.now()+(20*60*1000) // 20 mins
+  return {unHashedToken,hashedToken,tokenExpiry}
+}
 export const User = mongoose.model("User", userSchema);
