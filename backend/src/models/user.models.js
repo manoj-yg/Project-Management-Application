@@ -52,11 +52,11 @@ const userSchema = new Schema(
       type: String,
     },
 
-    forgetPasswordToken: {
+    forgotPasswordToken: {
       type: String,
     },
 
-    forgetPasswordExpiry: {
+    forgotPasswordExpiry: {
       type: Date,
     },
 
